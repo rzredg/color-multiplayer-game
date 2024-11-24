@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Changing Game</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: white;
+      font-family: Arial, sans-serif;
+    }
+    #color-input {
+      margin-top: 20px;
+    }
+    button {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Color Changing Game</h1>
+  <div>
+    <input id="color-input" type="text" placeholder="Enter a color" />
+    <button id="send-button">Send</button>
+  </div>
+  <p id="status">Connecting to server...</p>
+
+  <script src="networking.js"></script>
+  <script>
+    // Game logic
+    const statusElement = document.getElementById('status');
+    const colorInput = document.getElementById('color-input');
+    const sendButton = document.getElementById('send-button');
+
+    // Initialize networking
+    const networking = new NetworkingAPI('ws://10.158.82.33:8080');
+
+    // Update connection status
+    networking.onConnect(() => {
+      statusElement.textContent = 'Connected to server!';
+      console.log('WebSocket connection established with', networking.serverUrl);
+    });
+
+    networking.onDisconnect(() => {
+      statusElement.textContent = 'Disconnected from server.';
+    });
+
+    // Handle incoming messages (color updates)
+    networking.onMessage((message) => {
+      console.log('Received message:', message);  // Add this for debugging
+      if (message.type === 'color') {
+        const color = message.data.data || message.data;
+        document.body.style.backgroundColor = color;
+      }
+    });
+
+    // Send color to other player
+    sendButton.addEventListener('click', () => {
+      const color = colorInput.value.trim();
+      console.log('Sent color:', color);
+      if (color) {
+        networking.sendMessage({ type: 'color', data: color });
+        colorInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
