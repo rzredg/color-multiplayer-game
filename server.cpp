@@ -15,6 +15,7 @@
 #include <queue>
 
 // Base64 encoding function
+// Using code from user szmoore
 std::string base64_encode(const unsigned char* data, size_t len) {
     static const char base64_chars[] =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
